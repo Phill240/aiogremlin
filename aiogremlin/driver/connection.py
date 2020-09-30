@@ -85,11 +85,12 @@ class Connection:
         :returns: :py:class:`Connection<aiogremlin.driver.connection.Connection>`
         """
         if not protocol:
-            protocol = GremlinServerWSProtocol(message_serializer)
+            protocol = GremlinServerWSProtocol(message_serializer, username=username, password=password)
         if not transport_factory:
             transport_factory = lambda: AiohttpTransport(loop)
         transport = transport_factory()
         await transport.connect(url, ssl_context=ssl_context)
+        protocol.connection_made(transport)
         return cls(url, transport, protocol, loop, username, password,
                    max_inflight, response_timeout, message_serializer,
                    provider)
